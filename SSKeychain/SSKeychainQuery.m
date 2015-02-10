@@ -16,6 +16,17 @@
 @synthesize label = _label;
 @synthesize passwordData = _passwordData;
 
+#define SSKeychainQueryEnableLog = 1;
+
+void SSKeychainQueryLog(NSString *format, ...) {
+#ifdef SSKeychainQueryEnableLog
+	va_list args;
+	va_start(args, format);
+	NSString *formattedString = [[NSString alloc] initWithFormat:format arguments:args];
+	va_end(args);
+	NSLog(@"%@",formattedString);
+#endif
+}
 #if __IPHONE_3_0 && TARGET_OS_IPHONE
 @synthesize accessGroup = _accessGroup;
 #endif
@@ -48,6 +59,8 @@
 		[query setObject:(__bridge id)accessibilityType forKey:(__bridge id)kSecAttrAccessible];
 	}
 #endif
+    SSKeychainQueryLog(@"%p %@ %@ %@",self,NSStringFromClass([self class]),NSStringFromSelector(_cmd),query);
+
 	status = SecItemAdd((__bridge CFDictionaryRef)query, NULL);
 
 	if (status != errSecSuccess && error != NULL) {
@@ -73,6 +86,7 @@
 #else
 	CFTypeRef result = NULL;
 	[query setObject:@YES forKey:(__bridge id)kSecReturnRef];
+    SSKeychainQueryLog(@"%p %@ %@ %@",self,NSStringFromClass([self class]),NSStringFromSelector(_cmd),query);
 	status = SecItemCopyMatching((__bridge CFDictionaryRef)query, &result);
 	if (status == errSecSuccess) {
 		status = SecKeychainItemDelete((SecKeychainItemRef)result);
@@ -95,6 +109,8 @@
 	[query setObject:(__bridge id)kSecMatchLimitAll forKey:(__bridge id)kSecMatchLimit];
 
 	CFTypeRef result = NULL;
+    SSKeychainQueryLog(@"%p %@ %@ %@",self,NSStringFromClass([self class]),NSStringFromSelector(_cmd),query);
+
 	status = SecItemCopyMatching((__bridge CFDictionaryRef)query, &result);
 	if (status != errSecSuccess && error != NULL) {
 		*error = [[self class] errorWithCode:status];
@@ -118,6 +134,7 @@
 	NSMutableDictionary *query = [self query];
 	[query setObject:@YES forKey:(__bridge id)kSecReturnData];
 	[query setObject:(__bridge id)kSecMatchLimitOne forKey:(__bridge id)kSecMatchLimit];
+    SSKeychainQueryLog(@"%p %@ %@ %@",self,NSStringFromClass([self class]),NSStringFromSelector(_cmd),query);
 	status = SecItemCopyMatching((__bridge CFDictionaryRef)query, &result);
 
 	if (status != errSecSuccess) {
