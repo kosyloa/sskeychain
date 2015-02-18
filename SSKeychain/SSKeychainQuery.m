@@ -83,13 +83,13 @@ void SSKeychainQueryLog(NSString *format, ...) {
 #else
 	CFTypeRef result = NULL;
 	[query setObject:@YES forKey:(__bridge id)kSecReturnRef];
-    SSKeychainQueryLog(@"%p %@ %@ %@",self,NSStringFromClass([self class]),NSStringFromSelector(_cmd),query);
 	status = SecItemCopyMatching((__bridge CFDictionaryRef)query, &result);
 	if (status == errSecSuccess) {
 		status = SecKeychainItemDelete((SecKeychainItemRef)result);
 		CFRelease(result);
 	}
 #endif
+    SSKeychainQueryLog(@"%p %@ %@ %@",self,NSStringFromClass([self class]),NSStringFromSelector(_cmd),query);
 
 	if (status != errSecSuccess && error != NULL) {
 		*error = [[self class] errorWithCode:status];
