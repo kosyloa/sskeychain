@@ -16,13 +16,7 @@
 @synthesize label = _label;
 @synthesize passwordData = _passwordData;
 
-void SSKeychainQueryLog(NSString *format, ...) {
-	va_list args;
-	va_start(args, format);
-	NSString *formattedString = [[NSString alloc] initWithFormat:format arguments:args];
-	va_end(args);
-	NSLog(@"%@",formattedString);
-}
+#define SSKeychainQueryLog AKFileLog
 
 #if __IPHONE_3_0 && TARGET_OS_IPHONE
 @synthesize accessGroup = _accessGroup;
